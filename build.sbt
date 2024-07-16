@@ -15,6 +15,7 @@ lazy val pureConfigVersion = "0.17.7"
  */
 lazy val scalaTestVersion = "3.2.19"
 lazy val scalaMockVersion = "6.0.0"
+lazy val scalaTestPropVersion = "3.2.19.0"
 
 
 lazy val root = (project in file("."))
@@ -34,5 +35,6 @@ lazy val root = (project in file("."))
 lazy val testDependencies = Seq(
   "org.scalactic" %% "scalactic" % scalaTestVersion % Test,
   "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
-  "org.scalamock" %% "scalamock" % scalaMockVersion % Test
+  "org.scalamock" %% "scalamock" % scalaMockVersion % Test,
+  "org.scalatestplus" %% "scalacheck-1-18" % scalaTestPropVersion % Test
 )
