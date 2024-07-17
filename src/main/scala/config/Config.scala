@@ -3,7 +3,13 @@ package config
 import cats.effect.IO
 import cats.implicits.*
 import config.Config.ApplicationConfig
+
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.Positive
+import io.github.iltotore.iron.constraint.numeric.*
+
 import pureconfig.ConfigReader.Result
+import pureconfig.error.{CannotConvert, ExceptionThrown}
 import pureconfig.generic.derivation.default.*
 import pureconfig.{ConfigObjectSource, ConfigReader}
 
@@ -16,7 +22,7 @@ final case class Config(
                        ) extends ConfigReaderAlg {
 
   private val mapConfigLoadErrorsToThrowable = configObjectSource.load[ApplicationConfig]
-    .leftMap( configReaderFailures => new RuntimeException(configReaderFailures.prettyPrint()))
+    .leftMap(configReaderFailures => new RuntimeException(configReaderFailures.prettyPrint()))
 
   val config: IO[ApplicationConfig] = IO.fromEither(mapConfigLoadErrorsToThrowable)
 
@@ -24,7 +30,14 @@ final case class Config(
 
 object Config {
 
-  final case class ExampleConfig(intValue: Int, nonNegativeInt: Int) derives ConfigReader
+  given nonNegativeIntConfigReader: ConfigReader[Int :| Positive] =
+    ConfigReader[Int].emap {
+      _.refineEither[Positive].leftMap(errorString =>
+        ExceptionThrown(new RuntimeException(errorString))
+      )
+    }
+
+  final case class ExampleConfig(intValue: Int, nonNegativeInt: Int :| Positive) derives ConfigReader
 
   final case class ApplicationConfig(exampleConfig: ExampleConfig) derives ConfigReader
 
