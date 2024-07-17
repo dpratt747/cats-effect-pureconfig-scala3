@@ -3,11 +3,9 @@ package config
 import cats.effect.IO
 import cats.implicits.*
 import config.Config.ApplicationConfig
-
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.Positive
 import io.github.iltotore.iron.constraint.numeric.*
-
 import pureconfig.ConfigReader.Result
 import pureconfig.error.{CannotConvert, ExceptionThrown}
 import pureconfig.generic.derivation.default.*
@@ -30,13 +28,12 @@ final case class Config(
 
 object Config {
 
-  given nonNegativeIntConfigReader: ConfigReader[Int :| Positive] =
+  given positiveIntConfigReader: ConfigReader[Int :| Positive] =
     ConfigReader[Int].emap {
       _.refineEither[Positive].leftMap(errorString =>
         ExceptionThrown(new RuntimeException(errorString))
       )
     }
-
   final case class ExampleConfig(intValue: Int, nonNegativeInt: Int :| Positive) derives ConfigReader
 
   final case class ApplicationConfig(exampleConfig: ExampleConfig) derives ConfigReader
