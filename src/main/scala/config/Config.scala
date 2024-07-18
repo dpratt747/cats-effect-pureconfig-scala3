@@ -11,13 +11,13 @@ import pureconfig.error.{CannotConvert, ExceptionThrown}
 import pureconfig.generic.derivation.default.*
 import pureconfig.{ConfigObjectSource, ConfigReader}
 
-trait ConfigReaderAlg {
+trait ConfigAlg {
   val config: IO[ApplicationConfig]
 }
 
 final case class Config(
                          private val configObjectSource: ConfigObjectSource
-                       ) extends ConfigReaderAlg {
+                       ) extends ConfigAlg {
 
   private val mapConfigLoadErrorsToThrowable = configObjectSource.load[ApplicationConfig]
     .leftMap(configReaderFailures => new RuntimeException(configReaderFailures.prettyPrint()))
@@ -38,7 +38,7 @@ object Config {
 
   final case class ApplicationConfig(exampleConfig: ExampleConfig) derives ConfigReader
 
-  def make(configObjectSource: ConfigObjectSource): Config = {
+  def make(configObjectSource: ConfigObjectSource): ConfigAlg = {
     Config(configObjectSource)
   }
 }

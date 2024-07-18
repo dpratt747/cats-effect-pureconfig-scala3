@@ -10,7 +10,7 @@ object Main extends IOApp.Simple {
   override def run: IO[Unit] =
     for {
       logger <- Slf4jLogger.create[IO]
-      config <- Config.make(ConfigSource.default).config
-      _ <- logger.info(s"Application starting with the following config [${config.exampleConfig}]")
+      appConfig <- Config.make(ConfigSource.default).config
+      _ <- logger.info(s"Application started with the following config [${appConfig.exampleConfig}]")
     } yield ()
 }
